@@ -70,18 +70,16 @@ jobs:
 
       #Budowanie obrazu bez pushowania
       - name: Build docker image 
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          platforms: linux/amd64
-          push: false
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: |
-            type=registry,ref=${{ env.CACHE_REPO }}:buildcache
-          cache-to: |
-            type=registry,ref=${{ env.CACHE_REPO }}:buildcache,mode=max
-          outputs: type=docker,dest=/tmp/image.tar
+        run: |
+          docker build \
+            --platform linux/amd64 \
+            --tag scan-image:latest \
+            --label ${{ steps.meta.outputs.labels }} \
+            --cache-from type=registry,ref=${{ env.CACHE_REPO }}:buildcache \
+            --cache-to type=registry,ref=${{ env.CACHE_REPO }}:buildcache,mode=max \
+            .
+          docker save scan-image:latest --output /tmp/image.tar
+          echo "IMAGE_TAG=scan-image:latest" >> $GITHUB_ENV
 
       #załadowanie obrazu dla testu
       - name: Load image for scanning

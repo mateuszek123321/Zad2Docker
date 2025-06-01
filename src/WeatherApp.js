@@ -10,7 +10,7 @@ const port = process.env.PORT || 80;
 const autor = "Mateusz kłos";
 
 
-const apiKey = process.env.OPENWEATHER_API_KEY || "2300671b775521d114a3ec74d708217d";
+const apiKey = process.env.OPENWEATHER_API_KEY || "2300671b775521d114a3ec74d708xxxx";
 
 //lista predefiniowanych miast
 
