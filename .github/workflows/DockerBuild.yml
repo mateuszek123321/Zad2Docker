@@ -75,6 +75,7 @@ jobs:
           context: .
           platforms: linux/amd64
           push: false
+          load: true
           tags: scan-image:latest
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=registry,ref=${{ env.CACHE_REPO }}:buildcache
