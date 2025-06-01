@@ -2,14 +2,12 @@
   "name": "Zad2DockerWorkflow",
   "version": "1.0.0",
   "main": "WeatherApp.js",
-  "dependencies": {
-    "cross-spawn": "^7.0.6"
-  },
   "scripts": {
+    "start": "node WeatherApp.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "",
+  "author": "mateusz kłos",
   "license": "ISC",
   "description": ""
 }

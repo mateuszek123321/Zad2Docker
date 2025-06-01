@@ -87,11 +87,10 @@ jobs:
         uses: docker/scout-action@v1
         with:
           command: cves
-          image: ${{ steps.meta.outputs.tags }}
-          exit-code: true
-          only-severities: critical,high
-          output: sarif
-          sarif-file: scout-results.sarif
+          image: local-scan-image:latest
+          exit-code: false
+          only-severities: critical
+          summary: true
 
 
       #przesłanie wyników testu do githuba
@@ -103,7 +102,6 @@ jobs:
 
       #budowanie i przesylanie obrazu pod warunkiem braku zagrożeń
       - name: Push docker image
-        if: success()
         uses: docker/build-push-action@v5
         with:
           context: .

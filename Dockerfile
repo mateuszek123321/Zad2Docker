@@ -15,11 +15,14 @@ ENV PORT=80
 LABEL org.opencontainers.image.authors="mateusz kłos"
 
 #kopiujemy plik aplikacji do obrazu
-COPY src/package.json src/WeatherApp.js ./
+COPY src/package.json ./
 
 # instalacja zależności
-RUN npm install && \
+RUN npm install --production && \
     chown -R nodeapp:nodeapp /usr/app
+
+# Kopiowanie aplikacji
+COPY --chown=nodeapp:nodeapp src/WeatherApp.js ./
 
 #uzytkownik nieuprzywilejowany 
 USER nodeapp
