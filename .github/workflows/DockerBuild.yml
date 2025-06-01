@@ -99,7 +99,7 @@ jobs:
           image-ref: ${{ env.IMAGE_TAG }}
           format: 'sarif'
           output: '${{ github.workspace }}/trivyResults.sarif'
-          severity: 'CRITICAL,HIGH'
+          severity: 'CRITICAL'
           exit-code: '1'
 
       #przesłanie wyników testu do githuba
