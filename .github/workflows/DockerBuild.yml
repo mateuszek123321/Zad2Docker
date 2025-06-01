@@ -1,5 +1,13 @@
 name: Budowanie kontenera i przeslanie go do repo
 
+
+#zmienne srodowiskowe 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}  # Format: username/repository
+  CACHE_REPO: ${{ vars.DOCKERHUB_USERNAME }}/cache  # Repo dla cache na DockerHub
+
+
 on:
   push:
     branches: [ main ]
@@ -10,11 +18,7 @@ on:
   workflow_dispatch:
 
 
-  #zmienne srodowiskowe 
-  env:
-    REGISTRY: ghcr.io
-    IMAGE_NAME: ${{ github.repository }}  # Format: username/repository
-    CACHE_REPO: ${{ vars.DOCKERHUB_USERNAME }}/cache  # Repo dla cache na DockerHub
+
 jobs:
   build:
     runs-on: ubuntu-latest
