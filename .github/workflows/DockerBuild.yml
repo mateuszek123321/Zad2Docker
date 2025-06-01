@@ -5,7 +5,7 @@ name: Budowanie kontenera i przeslanie go do repo
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}  # Format: username/repository
-  CACHE_REPO: ${{ vars.DOCKERHUB_USERNAME }}/cache  # Repo dla cache na DockerHub
+  CACHE_REPO: ${{ vars.DOCKERHUB_USERNAME }}/zad2dockercache  # Repo dla cache na DockerHub
 
 
 on:
@@ -70,14 +70,19 @@ jobs:
 
       #Budowanie obrazu bez pushowania
       - name: Build docker image 
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          platforms: linux/amd64
+          push: false
+          tags: scan-image:latest
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=registry,ref=${{ env.CACHE_REPO }}:buildcache
+          cache-to: type=registry,ref=${{ env.CACHE_REPO }}:buildcache,mode=max
+
+      #zapisanie
+      - name: Save image tar for Trivy
         run: |
-          docker build \
-            --platform linux/amd64 \
-            --tag scan-image:latest \
-            --label ${{ steps.meta.outputs.labels }} \
-            --cache-from type=registry,ref=${{ env.CACHE_REPO }}:buildcache \
-            --cache-to type=registry,ref=${{ env.CACHE_REPO }}:buildcache,mode=max \
-            .
           docker save scan-image:latest --output /tmp/image.tar
           echo "IMAGE_TAG=scan-image:latest" >> $GITHUB_ENV
 
@@ -85,7 +90,6 @@ jobs:
       - name: Load image for scanning
         run: |
           docker load --input /tmp/image.tar
-
 
       #wykonanie testu cve z pomocą Trivy
       - name: Run Trivy vulnerability scanner
@@ -102,7 +106,7 @@ jobs:
         uses: github/codeql-action/upload-sarif@v3
         if: always()
         with:
-          sarif_file: 'trivyResults.sarif'
+          sarif_file: '${{ github.workspace }}/trivyResults.sarif'
 
       #budowanie i przesylanie obrazu pod warunkiem braku zagrożeń
       - name: Push docker image
