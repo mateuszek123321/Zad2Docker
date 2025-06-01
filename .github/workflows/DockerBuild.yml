@@ -93,7 +93,7 @@ jobs:
         with:
           image-ref: ${{ env.IMAGE_TAG }}
           format: 'sarif'
-          output: 'trivyResults.sarif'
+          output: '${{ github.workspace }}/trivyResults.sarif'
           severity: 'CRITICAL,HIGH'
           exit-code: '1'
 
