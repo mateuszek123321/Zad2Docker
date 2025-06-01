@@ -73,7 +73,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
           push: false
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
@@ -87,7 +87,7 @@ jobs:
       - name: Load image for scanning
         run: |
           docker load --input /tmp/image.tar
-          echo "IMAGE_TAG=$(echo ${{ steps.meta.outputs.tags }} | cut -d',' -f1)" >> $GITHUB_ENV
+
 
       #wykonanie testu cve z pomocą Trivy
       - name: Run Trivy vulnerability scanner
