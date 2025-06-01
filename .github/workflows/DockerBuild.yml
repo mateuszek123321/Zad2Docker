@@ -76,38 +76,30 @@ jobs:
           platforms: linux/amd64
           push: false
           load: true
-          tags: scan-image:latest
+          tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=registry,ref=${{ env.CACHE_REPO }}:buildcache
           cache-to: type=registry,ref=${{ env.CACHE_REPO }}:buildcache,mode=max
-
-      #zapisanie
-      - name: Save image tar for Trivy
-        run: |
-          docker save scan-image:latest --output /tmp/image.tar
-          echo "IMAGE_TAG=scan-image:latest" >> $GITHUB_ENV
-
-      #załadowanie obrazu dla testu
-      - name: Load image for scanning
-        run: |
-          docker load --input /tmp/image.tar
-
-      #wykonanie testu cve z pomocą Trivy
-      - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@master
+      
+      
+      #Skanowanie obrazu za pomocą Docker Scout
+      - name: Docker Scout vulnerability scan
+        uses: docker/scout-action@v1
         with:
-          image-ref: ${{ env.IMAGE_TAG }}
-          format: 'sarif'
-          output: '${{ github.workspace }}/trivyResults.sarif'
-          severity: 'CRITICAL'
-          exit-code: '1'
+          command: cves
+          image: ${{ steps.meta.outputs.tags }}
+          exit-code: true
+          only-severities: critical,high
+          output: sarif
+          sarif-file: scout-results.sarif
+
 
       #przesłanie wyników testu do githuba
-      - name: Upload Trivy scan results to GitHub Security
+      - name: Upload Scout results to GitHub Security
         uses: github/codeql-action/upload-sarif@v3
         if: always()
         with:
-          sarif_file: '${{ github.workspace }}/trivyResults.sarif'
+          sarif_file: scout-results.sarif
 
       #budowanie i przesylanie obrazu pod warunkiem braku zagrożeń
       - name: Push docker image
